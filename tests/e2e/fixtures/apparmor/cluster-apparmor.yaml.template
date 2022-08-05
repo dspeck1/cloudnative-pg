@@ -9,3 +9,5 @@ spec:
 
   storage:
     size: 1Gi
+  walStorage:
+    size: 1Gi

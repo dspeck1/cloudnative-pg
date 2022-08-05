@@ -16,6 +16,9 @@ spec:
           - "SELECT 1;"
   storage:
     size: 1Gi
+  walStorage:
+    size: 1Gi
+
   externalClusters:
     - name: cluster-microservice
       connectionParameters:

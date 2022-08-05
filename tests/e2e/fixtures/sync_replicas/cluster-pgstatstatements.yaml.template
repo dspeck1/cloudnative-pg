@@ -22,3 +22,6 @@ spec:
   storage:
     storageClass: ${E2E_DEFAULT_STORAGE_CLASS}
     size: 1G
+  walStorage:
+    size: 1Gi
+    storageClass: ${E2E_DEFAULT_STORAGE_CLASS}

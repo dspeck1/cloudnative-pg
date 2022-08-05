@@ -16,6 +16,9 @@ spec:
   storage:
     size: 1Gi
     storageClass: ${E2E_DEFAULT_STORAGE_CLASS}
+  walStorage:
+    size: 1Gi
+    storageClass: ${E2E_DEFAULT_STORAGE_CLASS}
 
   externalClusters:
   - name: cluster-replica-src
