@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: postgresql-cert
+  name: p-postinit-sql
 spec:
   instances: 3
 
@@ -19,17 +19,20 @@ spec:
     pg_hba:
       - hostssl all all all cert
 
-  certificates:
-    serverCASecret: ""
-    serverTLSSecret: ""
-    clientCASecret: ""
-    replicationTLSSecret: ""
-
   bootstrap:
     initdb:
       database: app
       owner: app
+      postInitSQL:
+        - create table numbers (i integer)
+        - insert into numbers (select generate_series(1,10000))
+      postInitTemplateSQL:
+        - create extension intarray
+      postInitApplicationSQL:
+        - create table application_numbers (i integer)
+        - insert into application_numbers (select generate_series(1,10000))
 
   # Persistent storage configuration
   storage:
+    storageClass: ${E2E_DEFAULT_STORAGE_CLASS}
     size: 1Gi
