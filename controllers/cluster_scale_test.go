@@ -35,12 +35,12 @@ var _ = Describe("cluster_scale unit tests", func() {
 		cluster := newFakeCNPGCluster(namespace)
 
 		resources := &managedResources{
-			pvcs: corev1.PersistentVolumeClaimList{Items: generateFakePVCWithDefaultClient(cluster)},
-			jobs: batchv1.JobList{Items: generateFakeInitDBJobsWithDefaultClient(cluster)},
-			pods: corev1.PodList{Items: generateFakeClusterPodsWithDefaultClient(cluster, true)},
+			pvcs:      corev1.PersistentVolumeClaimList{Items: generateFakePVCWithDefaultClient(cluster)},
+			jobs:      batchv1.JobList{Items: generateFakeInitDBJobsWithDefaultClient(cluster)},
+			instances: corev1.PodList{Items: generateFakeClusterPodsWithDefaultClient(cluster, true)},
 		}
 
-		sacrificialPodBefore := getSacrificialPod(resources.pods.Items)
+		sacrificialPodBefore := getSacrificialInstance(resources.instances.Items)
 		err := k8sClient.Get(
 			ctx,
 			types.NamespacedName{Name: sacrificialPodBefore.Name, Namespace: cluster.Namespace},
@@ -55,7 +55,7 @@ var _ = Describe("cluster_scale unit tests", func() {
 		)
 		Expect(err).To(BeNil())
 
-		sacrificialPod := getSacrificialPod(resources.pods.Items)
+		sacrificialPod := getSacrificialInstance(resources.instances.Items)
 		err = k8sClient.Get(
 			ctx,
 			types.NamespacedName{Name: sacrificialPod.Name, Namespace: cluster.Namespace},

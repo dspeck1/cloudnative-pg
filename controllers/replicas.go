@@ -107,7 +107,7 @@ func (r *ClusterReconciler) updateTargetPrimaryFromPodsPrimaryCluster(
 	if cluster.Status.TargetPrimary == cluster.Status.CurrentPrimary {
 		contextLogger.Info("Current primary isn't healthy, initiating a failover")
 		status.LogStatus(ctx)
-		contextLogger.Debug("Cluster status before initiating the failover", "pods", resources.pods)
+		contextLogger.Debug("Cluster status before initiating the failover", "pods", resources.instances)
 		r.Recorder.Eventf(cluster, "Normal", "FailingOver",
 			"Current primary isn't healthy, initiating a failover from %v", cluster.Status.CurrentPrimary)
 		if err := r.RegisterPhase(ctx, cluster, apiv1.PhaseFailOver,
@@ -131,7 +131,7 @@ func (r *ClusterReconciler) updateTargetPrimaryFromPodsPrimaryCluster(
 	if cluster.Status.TargetPrimary == apiv1.PendingFailoverMarker {
 		contextLogger.Info("Failing over", "newPrimary", status.Items[0].Pod.Name)
 		status.LogStatus(ctx)
-		contextLogger.Debug("Cluster status before failover", "pods", resources.pods)
+		contextLogger.Debug("Cluster status before failover", "pods", resources.instances)
 		r.Recorder.Eventf(cluster, "Normal", "FailoverTarget",
 			"Failing over from %v to %v",
 			cluster.Status.CurrentPrimary, status.Items[0].Pod.Name)
@@ -143,7 +143,7 @@ func (r *ClusterReconciler) updateTargetPrimaryFromPodsPrimaryCluster(
 		contextLogger.Info("Target primary isn't healthy, switching target",
 			"newPrimary", status.Items[0].Pod.Name)
 		status.LogStatus(ctx)
-		contextLogger.Debug("Cluster status before switching target", "pods", resources.pods)
+		contextLogger.Debug("Cluster status before switching target", "pods", resources.instances)
 		r.Recorder.Eventf(cluster, "Normal", "FailingOver",
 			"Target primary isn't healthy, switching target from %v to %v",
 			cluster.Status.TargetPrimary, status.Items[0].Pod.Name)
@@ -275,7 +275,7 @@ func (r *ClusterReconciler) updateTargetPrimaryFromPodsReplicaCluster(
 	contextLogger.Info("Current target primary isn't healthy, failing over",
 		"newPrimary", status.Items[0].Pod.Name)
 	status.LogStatus(ctx)
-	contextLogger.Debug("Cluster status before failover", "pods", resources.pods)
+	contextLogger.Debug("Cluster status before failover", "pods", resources.instances)
 	r.Recorder.Eventf(cluster, "Normal", "FailingOver",
 		"Current target primary isn't healthy, failing over from %v to %v",
 		cluster.Status.TargetPrimary, status.Items[0].Pod.Name)
@@ -495,7 +495,7 @@ func (r *ClusterReconciler) updateClusterLabelsOnPVCs(
 }
 
 // Make sure that only the currentPrimary has the label forward write traffic to him
-func (r *ClusterReconciler) updateRoleLabelsOnPods(
+func (r *ClusterReconciler) updateRoleLabelsOnInstances(
 	ctx context.Context,
 	cluster *apiv1.Cluster,
 	pods corev1.PodList,
@@ -551,9 +551,9 @@ func (r *ClusterReconciler) updateRoleLabelsOnPods(
 	return nil
 }
 
-// getSacrificialPod get the Pod who is supposed to be deleted
+// getSacrificialInstance get the Pod who is supposed to be deleted
 // when the cluster is scaled down
-func getSacrificialPod(podList []corev1.Pod) *corev1.Pod {
+func getSacrificialInstance(podList []corev1.Pod) *corev1.Pod {
 	resultIdx := -1
 	var lastFoundSerial int
 

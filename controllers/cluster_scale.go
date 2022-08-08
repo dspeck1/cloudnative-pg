@@ -53,7 +53,7 @@ func (r *ClusterReconciler) scaleDownCluster(
 	}
 
 	// Is there one pod to be deleted?
-	sacrificialPod := getSacrificialPod(resources.pods.Items)
+	sacrificialPod := getSacrificialInstance(resources.instances.Items)
 	if sacrificialPod == nil {
 		contextLogger.Info("There are no instances to be sacrificed. Wait for the next sync loop")
 		return nil
